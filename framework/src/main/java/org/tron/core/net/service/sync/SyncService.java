@@ -53,6 +53,10 @@ public class SyncService {
       .maximumSize(10_000)
       .expireAfterWrite(blockCacheTimeout, TimeUnit.MINUTES).initialCapacity(10_000)
       .recordStats().build();
+  private Cache<BlockId, Long> retryBlockIds = CacheBuilder.newBuilder()
+      .maximumSize(10_000)
+      .expireAfterWrite(blockCacheTimeout, TimeUnit.MINUTES).initialCapacity(1_000)
+      .recordStats().build();
 
   private ScheduledExecutorService fetchExecutor = Executors.newSingleThreadScheduledExecutor();
 
@@ -291,6 +295,7 @@ public class SyncService {
   private void processSyncBlock(BlockCapsule block, PeerConnection peerConnection) {
     boolean flag = true;
     boolean attackFlag = false;
+    boolean timeOutFlag = false;
     BlockId blockId = block.getBlockId();
     try {
       tronNetDelegate.validSignature(block);
@@ -301,6 +306,7 @@ public class SyncService {
               blockId.getString(), p2pException.getType());
       attackFlag = p2pException.getType().equals(TypeEnum.BLOCK_SIGN_ERROR)
               || p2pException.getType().equals(TypeEnum.BLOCK_MERKLE_ERROR);
+      timeOutFlag = p2pException.getType().equals(TypeEnum.TIME_OUT_ERROR);
       flag = false;
     } catch (Exception e) {
       logger.error("Process sync block {} failed", blockId.getString(), e);
@@ -310,6 +316,17 @@ public class SyncService {
     if (attackFlag) {
       invalid(blockId, peerConnection);
       peerConnection.disconnect(ReasonCode.BAD_BLOCK);
+      return;
+    }
+
+    if (timeOutFlag) {
+      Long retryCount = retryBlockIds.getIfPresent(blockId);
+      if (retryCount == null || retryCount < 3) {
+        invalid(blockId, peerConnection);
+        peerConnection.disconnect(ReasonCode.BAD_BLOCK);
+        retryCount = retryCount == null ? 0 : retryCount;
+        retryBlockIds.put(blockId, retryCount);
+      }
       return;
     }
 

@@ -52,6 +52,7 @@ public class P2pException extends Exception {
     PROTOBUF_ERROR(14, "protobuf inconsistent"),
     BLOCK_SIGN_ERROR(15, "block sign error"),
     BLOCK_MERKLE_ERROR(16, "block merkle error"),
+    TIME_OUT_ERROR(17, "time out error"),
 
     DEFAULT(100, "default exception");
 

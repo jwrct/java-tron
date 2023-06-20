@@ -290,6 +290,9 @@ public class TronNetDelegate {
         if (e instanceof BadBlockException
                 && ((BadBlockException) e).getType().equals(CALC_MERKLE_ROOT_FAILED)) {
           throw new P2pException(TypeEnum.BLOCK_MERKLE_ERROR, e);
+        } else if (e instanceof ReceiptCheckErrException
+            && e.getMessage().endsWith("OUT_OF_TIME")) {
+          throw new P2pException(TypeEnum.TIME_OUT_ERROR, e);
         } else {
           throw new P2pException(TypeEnum.BAD_BLOCK, e);
         }
