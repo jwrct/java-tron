@@ -328,7 +328,7 @@ public class SyncService {
       if (retryCount == null || retryCount < 3) {
         invalid(blockId, peerConnection);
         peerConnection.disconnect(ReasonCode.BAD_BLOCK);
-        retryCount = retryCount == null ? 0 : retryCount;
+        retryCount = retryCount == null ? 1 : (retryCount + 1);
         retryBlockIds.put(blockId, retryCount);
       }
       return;
