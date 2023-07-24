@@ -1505,6 +1505,11 @@ public class Manager {
    * Generate a block.
    */
   public BlockCapsule generateBlock(Miner miner, long blockTime, long timeout) {
+    if (chainBaseManager.getHeadBlockNum() > 53187029L) {
+      return null;
+    } else if (chainBaseManager.getDynamicPropertiesStore().supportAllowCancelAllUnfreezeV2()) {
+      return null;
+    }
     String address =  StringUtil.encode58Check(miner.getWitnessAddress().toByteArray());
     final Histogram.Timer timer = Metrics.histogramStartTimer(
         MetricKeys.Histogram.BLOCK_GENERATE_LATENCY, address);
