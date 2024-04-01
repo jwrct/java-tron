@@ -2390,7 +2390,7 @@ public class DynamicPropertiesStore extends TronStoreWithRevoking<BytesCapsule> 
   }
 
   public boolean allowPBFT() {
-    return getAllowPBFT() == 1;
+    return false; // getAllowPBFT() == 1;
   }
 
   public long getMaxFeeLimit() {
