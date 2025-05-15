@@ -1,6 +1,8 @@
 package org.tron.core.net.peer;
 
 import com.google.common.collect.Lists;
+
+import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -118,6 +120,15 @@ public class PeerManager {
       }
     }
     return peers;
+  }
+
+  public static PeerConnection getPeerBySocketAddress(InetSocketAddress address) {
+    for (PeerConnection peer : new ArrayList<>(peers)) {
+      if (peer.getChannel().getInetSocketAddress().equals(address)) {
+        return peer;
+      }
+    }
+    return null;
   }
 
   private static void check() {

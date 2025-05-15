@@ -32,6 +32,7 @@ import org.tron.core.net.service.sync.SyncService;
 import org.tron.p2p.P2pConfig;
 import org.tron.p2p.P2pService;
 import org.tron.p2p.utils.NetUtil;
+import org.tron.protos.Protocol;
 
 @Slf4j(topic = "net")
 @Component
@@ -152,6 +153,13 @@ public class TronNetService {
       }
     }
     return false;
+  }
+
+  public static void removePeer(InetSocketAddress address) {
+    PeerConnection peer = PeerManager.getPeerBySocketAddress(address);
+    if (peer != null && !peer.isDisconnect()) {
+      peer.disconnect(Protocol.ReasonCode.USER_REASON);
+    }
   }
 
   private P2pConfig getConfig() {

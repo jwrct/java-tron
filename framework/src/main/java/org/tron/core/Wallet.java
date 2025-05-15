@@ -49,6 +49,7 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import com.google.protobuf.ProtocolStringList;
 import java.math.BigInteger;
+import java.net.InetSocketAddress;
 import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -216,6 +217,7 @@ import org.tron.core.zen.note.Note;
 import org.tron.core.zen.note.NoteEncryption;
 import org.tron.core.zen.note.NoteEncryption.Encryption;
 import org.tron.core.zen.note.OutgoingPlaintext;
+import org.tron.p2p.utils.NetUtil;
 import org.tron.protos.Protocol;
 import org.tron.protos.Protocol.Account;
 import org.tron.protos.Protocol.Account.FreezeV2;
@@ -4515,6 +4517,10 @@ public class Wallet {
       logger.error("GetMemoFeePrices failed", e);
     }
     return null;
+  }
+
+  public void removePeer(String peer) {
+    TronNetService.removePeer(NetUtil.parseInetSocketAddress(peer));
   }
 }
 
